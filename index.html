@@ -488,15 +488,17 @@ async function publishRemote(){
  collect();
  const payload=outObj();
  payload.stamp=Date.now();
- const key=sessionStorage.getItem("invictt_admin_key")||prompt("Chave de publicação da INVICTT:");
+ /* A chave é solicitada a cada publicação para evitar reutilizar uma credencial antiga. */
+ sessionStorage.removeItem("invictt_admin_key");
+ const key=prompt("Chave de publicação da INVICTT:");
  if(!key)return;
- sessionStorage.setItem("invictt_admin_key",key);
  try{
-  const r=await fetch("/api/site-data",{method:"POST",headers:{"Content-Type":"application/json","X-INVICTT-ADMIN-KEY":key},body:JSON.stringify(payload)});
-  if(!r.ok){let msg="Falha ao publicar.";try{const j=await r.json();if(j.error)msg=j.error}catch(e){}throw new Error(msg)}
+  const r=await fetch("/api/site-data",{method:"POST",headers:{"Content-Type":"application/json","X-INVICTT-ADMIN-KEY":key.trim()},body:JSON.stringify(payload)});
+  if(!r.ok){let msg="Falha ao publicar.";try{const j=await r.json();if(j.error)msg=j.error}catch(e){};throw new Error(msg)}
+  sessionStorage.setItem("invictt_admin_key",key.trim());
   localStorage.setItem(KEY,JSON.stringify(payload));
   alert("Alterações publicadas. O site público já está usando a nova versão.");
- }catch(e){alert(e.message+"\n\nSe esta for a primeira publicação, confira a chave ADMIN_KEY configurada na Vercel.")}
+ }catch(e){sessionStorage.removeItem("invictt_admin_key");alert(e.message+"\n\nA publicação não foi concluída. Confira a ADMIN_KEY da Vercel e tente novamente.")}
 }
 async function saveFile(name,text){try{const d=await claude.use("downloads");if(d){await d.save({filename:name,data:text});return}}catch(e){}
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/html"}));a.download=name;a.click()}
