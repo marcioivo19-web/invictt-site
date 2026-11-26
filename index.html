@@ -520,7 +520,7 @@ if(EDIT){document.body.classList.add("edm");$("#ep").classList.add("open");paint
   if(t.dataset.gph&&t.files[0]){const i=+t.dataset.gph,p=W.goals[i],u=await rs(t.files[0],760);W.goalPhotos[p.id]=u;paint()}
   if(t.dataset.vf&&t.files[0]){const[g,i]=t.dataset.vf.split("|"),p=W[g][+i];await idbPut("v_"+p.id,t.files[0]);p.video="idb:v_"+p.id;paint()}
   if(t.id==="g_l"&&t.files[0]){W.logo=await rs(t.files[0],700,"image/png");document.querySelectorAll('img[alt="INVICTT Fitness"]').forEach(i=>i.src=W.logo)}});
- $("#eB").addEventListener("click",e=>{const t=e.target;if(t.dataset.cam){const q=t.dataset.cam.split("|");let sel="";if(q[0]==="ph")sel='input[data-ph="'+q[1]+"|"+q[2]+'"]';else if(q[0]==="goal")sel='input[data-gph="'+q[1]+'"]';else if(q[0]==="logo")sel="#g_l";const inp=sel?document.querySelector(sel):null;if(inp){inp.setAttribute("capture","environment");inp.click()}return;
+ $("#eB").addEventListener("click",e=>{const t=e.target;if(t.dataset.cam){const q=t.dataset.cam.split("|");let sel="";if(q[0]==="ph")sel='input[data-ph="'+q[1]+"|"+q[2]+'"]';else if(q[0]==="goal")sel='input[data-gph="'+q[1]+'"]';else if(q[0]==="logo")sel="#g_l";const inp=sel?document.querySelector(sel):null;if(inp){inp.setAttribute("capture","environment");inp.click()}return;}
   if(t.dataset.rph){W.photos[t.dataset.rph]=PHOTOS[t.dataset.rph]="";paint()}
   if(t.dataset.grph){W.goalPhotos[t.dataset.grph]="";paint()}
   if(t.dataset.gdel&&confirm("Excluir este objetivo?")){W.goals.splice(+t.dataset.gdel,1);paint()}
