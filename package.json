@@ -1,0 +1,6 @@
+{
+  "name":"invictt-site",
+  "private":true,
+  "version":"2.0.0",
+  "dependencies":{"@vercel/blob":"latest"}
+}
