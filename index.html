@@ -150,7 +150,7 @@ footer a{display:block;padding:3px 0}
 #ep label{display:block;font-size:11px;color:#a3a3a0}
 .er{border:1px solid #2f2419;border-radius:8px;padding:8px;margin-bottom:8px;display:grid;gap:6px}
 .e2{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:end}.e3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.er img{width:46px;height:46px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:6px}
+.er img{width:46px;height:46px;object-fit:cover;border-radius:6px;vertical-align:middle;margin-right:6px}.camrow{display:flex;gap:6px;align-items:center}.camrow input[type=file]{flex:1}.camrow button{white-space:nowrap}
 .edm [contenteditable]{outline:1px dashed #c9a07c;outline-offset:2px;cursor:text}
 .ehint{font-size:11px;color:#a3a3a0;padding:0 12px 6px}
 
@@ -458,7 +458,7 @@ const EDIT=location.hash==="#admin"||sessionStorage.getItem("ep")==="1";
 document.querySelectorAll(EDSEL).forEach((el,i)=>{if(ST.text[i]!=null)el.textContent=ST.text[i]});
 {let n=0,t0=0;document.querySelector(".logo").addEventListener("click",()=>{const now=Date.now();n=now-t0<1500?n+1:1;t0=now;if(n>=5){sessionStorage.setItem("ep","1");location.reload()}})}
 const clone=o=>JSON.parse(JSON.stringify(o));
-const W={supplements:clone(C.supplements),fashion:clone(C.fashion),kits:clone(C.kits),tabsSup:[...C.tabsSup],tabsMod:[...C.tabsMod],photos:{...(ST.photos||{})},pos:{...(ST.pos||{})},logo:ST.logo||""};
+const W={supplements:clone(C.supplements),fashion:clone(C.fashion),kits:clone(C.kits),tabsSup:[...C.tabsSup],tabsMod:[...C.tabsMod],photos:{...(ST.photos||{})},pos:{...(ST.pos||{})},logo:ST.logo||"",goals:clone(ST.goals||[{id:"g1",name:"Massa muscular",art:"tub"},{id:"g2",name:"Alta performance",art:"jar"},{id:"g3",name:"Energia e emagrecimento",art:"pre"}]),goalPhotos:{...(ST.goalPhotos||{})}};
 const fmt=a=>a.map(x=>x.join(" | ")).join("\n");
 const parse=t=>t.split("\n").map(l=>l.split("|").map(x=>x.trim())).filter(a=>a[0]);
 const fmtMenu=m=>m.map(i=>Array.isArray(i[1])?i[0]+" | #\n"+i[1].map(x=>"- "+x[0]+" | "+x[1]).join("\n"):i[0]+" | "+i[1]).join("\n");
@@ -469,21 +469,22 @@ function row(g,i,p){const tl=GT[g]?W[GT[g]]:null,d='data-g="'+g+'" data-i="'+i+'
  return '<div class="er"><div class="e2"><label>Nome<input '+d+'data-f="name" value="'+esc(p.name)+'"></label><span><button data-mv="'+g+'|'+i+'|-1">↑</button> <button data-mv="'+g+'|'+i+'|1">↓</button> <button data-del="'+g+'|'+i+'">Excluir</button></span></div>'+
  '<div class="e3"><label>Preço (R$)<input '+d+'data-f="price" value="'+p.price+'"></label><label>Preço antigo<input '+d+'data-f="old" value="'+(p.old||"")+'"></label><label>Selo<input '+d+'data-f="badge" value="'+esc(p.badge||"")+'"></label></div>'+
  '<div class="e2" style="grid-template-columns:1fr 1fr"><label>Tamanhos<input '+d+'data-f="sizes" value="'+esc(p.sizes||"")+'"></label>'+(tl?'<label>Aba<select '+d+'data-f="tab">'+tl.map(t=>'<option'+(tabOf(p)===t?" selected":"")+'>'+esc(t)+'</option>').join("")+'</select></label>':"<span></span>")+'</div>'+
- '<div class="e2"><label>Foto (enviar imagem)<input type="file" accept="image/*" data-ph="'+g+'|'+i+'"></label><span>'+(PHOTOS[p.id]?'<img src="'+PHOTOS[p.id]+'"><button data-rph="'+p.id+'">Remover</button>':"")+'</span></div>'+
+ '<div class="e2"><label>Foto (enviar imagem)<span class="camrow"><input type="file" accept="image/*" capture="environment" data-ph="'+g+'|'+i+'"><button type="button" data-cam="ph|'+g+'|'+i+'">📷 Abrir câmera</button></span></label><span>'+(PHOTOS[p.id]?'<img src="'+PHOTOS[p.id]+'"><button data-rph="'+p.id+'">Remover</button>':"")+'</span></div>'+
  (PHOTOS[p.id]?'<label>Enquadramento da foto<select data-pos="'+p.id+'">'+[["Topo","50% 15%"],["Centro","50% 50%"],["Baixo","50% 85%"]].map(o=>'<option value="'+o[1]+'"'+((POS[p.id]||"50% 50%")===o[1]?" selected":"")+'>'+o[0]+'</option>').join("")+'</select></label>':"")+
  '<div class="e2"><label>Vídeo (link do YouTube/Instagram ou enviar arquivo)<input '+d+'data-f="video" value="'+esc((p.video||"").startsWith("idb:")?"":p.video||"")+'" placeholder="'+((p.video||"").startsWith("idb:")?"arquivo enviado":"https://...")+'"></label><label>Arquivo<input type="file" accept="video/*" data-vf="'+g+'|'+i+'"></label></div></div>'}
+function goalRow(i,p){return '<div class="er"><div class="e2"><label>Objetivo<input data-gi="'+i+'" data-gf="name" value="'+esc(p.name)+'"></label><span><button data-gdel="'+i+'">Excluir</button></span></div><div class="e2"><label>Imagem do objetivo<span class="camrow"><input type="file" accept="image/*" capture="environment" data-gph="'+i+'"><button type="button" data-cam="goal|'+i+'">📷 Abrir câmera</button></span></label><span>'+(W.goalPhotos[p.id]?'<img src="'+W.goalPhotos[p.id]+'"><button data-grph="'+p.id+'">Remover</button>':"")+'</span></div></div>'}
 function paint(){const B=$("#eB");let h="";
- if(tab==="p"){for(const g of["supplements","fashion","kits"]){h+='<h4>'+GN[g]+' <button data-new="'+g+'">+ Adicionar</button></h4>'+W[g].map((p,i)=>row(g,i,p)).join("")}}
+ if(tab==="p"){for(const g of["supplements","fashion","kits"]){h+='<h4>'+GN[g]+' <button data-new="'+g+'">+ Adicionar</button></h4>'+W[g].map((p,i)=>row(g,i,p)).join("")}h+='<h4>Imagens dos objetivos</h4>'+W.goals.map((p,i)=>goalRow(i,p)).join("")}
  if(tab==="l"){h+='<h4>Abas dos suplementos (separe por vírgula)</h4><input id="l_ts" value="'+esc(W.tabsSup.join(", "))+'"><h4>Abas da moda (separe por vírgula)</h4><input id="l_tm" value="'+esc(W.tabsMod.join(", "))+'">'+
   [["l_top","Faixa do topo (uma por linha)",(W.topbar||C.topbar).join("\n")],["l_perk","Benefícios: Título | Descrição",fmt(W.perks||C.perks)],["l_promo","Promoções: Título | Subtítulo | #destino",fmt(W.promos||C.promos)],["l_menu","Menu (use '- ' para submenu): Nome | #destino",fmtMenu(W.menu||C.menu)],["l_cat","Categorias: arte | Nome | #destino (artes: tub, jar, pre, bar, tee, tank, shorts, romper, cap, shoe, kit)",fmt(W.categories||C.categories)],["l_faq","Dúvidas: Pergunta | Resposta",fmt(W.faq||C.faq)]].map(x=>'<h4>'+x[1]+'</h4><textarea id="'+x[0]+'">'+esc(x[2])+'</textarea>').join("")}
- if(tab==="g"){h+='<h4>Marca</h4><input id="g_b" value="'+esc(W.brand||C.brand)+'"><h4>WhatsApp (só números, com DDI e DDD)</h4><input id="g_w" value="'+esc(W.whatsapp||C.whatsapp)+'"><h4>Link do Instagram</h4><input id="g_i" value="'+esc(W.instagram||C.instagram)+'"><h4>Logo (enviar imagem)</h4><input type="file" accept="image/*" id="g_l">'}
+ if(tab==="g"){h+='<h4>Marca</h4><input id="g_b" value="'+esc(W.brand||C.brand)+'"><h4>WhatsApp (só números, com DDI e DDD)</h4><input id="g_w" value="'+esc(W.whatsapp||C.whatsapp)+'"><h4>Link do Instagram</h4><input id="g_i" value="'+esc(W.instagram||C.instagram)+'"><h4>Logo (enviar imagem)</h4><span class="camrow"><input type="file" accept="image/*" capture="environment" id="g_l"><button type="button" data-cam="logo">📷 Abrir câmera</button></span>'}
  B.innerHTML=h}
 function collect(){const v=id=>{const e=$("#"+id);return e?e.value:null};
  const ren=(g,old,nw)=>{if(old.length===nw.length)W[g].forEach(p=>{const k=old.indexOf(tabOf(p));if(k>-1)p.tab=nw[k]})};
  if(v("l_ts")!=null){const a=v("l_ts").split(",").map(x=>x.trim()).filter(Boolean),b=v("l_tm").split(",").map(x=>x.trim()).filter(Boolean);ren("supplements",W.tabsSup,a);ren("fashion",W.tabsMod,b);W.tabsSup=a;W.tabsMod=b;
   W.topbar=v("l_top").split("\n").map(x=>x.trim()).filter(Boolean);W.perks=parse(v("l_perk"));W.promos=parse(v("l_promo"));W.menu=parseMenu(v("l_menu"));W.categories=parse(v("l_cat"));W.faq=parse(v("l_faq"))}
  if(v("g_b")!=null){W.brand=v("g_b");W.whatsapp=v("g_w").replace(/\D/g,"");W.instagram=v("g_i")}}
-function outObj(){return {stamp:DATA?DATA.stamp:0,supplements:W.supplements,fashion:W.fashion,kits:W.kits,tabsSup:W.tabsSup,tabsMod:W.tabsMod,topbar:W.topbar||C.topbar,perks:W.perks||C.perks,promos:W.promos||C.promos,menu:W.menu||C.menu,categories:W.categories||C.categories,faq:W.faq||C.faq,whatsapp:W.whatsapp||C.whatsapp,instagram:W.instagram||C.instagram,brand:W.brand||C.brand,logo:W.logo,photos:W.photos,pos:W.pos,text:ST.text}}
+function outObj(){return {stamp:DATA?DATA.stamp:0,supplements:W.supplements,fashion:W.fashion,kits:W.kits,tabsSup:W.tabsSup,tabsMod:W.tabsMod,topbar:W.topbar||C.topbar,perks:W.perks||C.perks,promos:W.promos||C.promos,menu:W.menu||C.menu,categories:W.categories||C.categories,faq:W.faq||C.faq,whatsapp:W.whatsapp||C.whatsapp,instagram:W.instagram||C.instagram,brand:W.brand||C.brand,logo:W.logo,photos:W.photos,pos:W.pos,goals:W.goals,goalPhotos:W.goalPhotos,text:ST.text}}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(outObj()))}catch(e){alert("Armazenamento do navegador cheio. Use 'Baixar site' para guardar suas alterações.")}}
 async function publishRemote(){
  collect();
@@ -516,10 +517,13 @@ if(EDIT){document.body.classList.add("edm");$("#ep").classList.add("open");paint
   if(t.dataset.g&&t.tagName==="SELECT"){W[t.dataset.g][+t.dataset.i][t.dataset.f]=t.value}
   if(t.dataset.pos){W.pos[t.dataset.pos]=POS[t.dataset.pos]=t.value}
   if(t.dataset.ph&&t.files[0]){const[g,i]=t.dataset.ph.split("|"),id=W[g][+i].id,u=await rs(t.files[0],760);W.photos[id]=PHOTOS[id]=u;paint()}
+  if(t.dataset.gph&&t.files[0]){const i=+t.dataset.gph,p=W.goals[i],u=await rs(t.files[0],760);W.goalPhotos[p.id]=u;paint()}
   if(t.dataset.vf&&t.files[0]){const[g,i]=t.dataset.vf.split("|"),p=W[g][+i];await idbPut("v_"+p.id,t.files[0]);p.video="idb:v_"+p.id;paint()}
   if(t.id==="g_l"&&t.files[0]){W.logo=await rs(t.files[0],700,"image/png");document.querySelectorAll('img[alt="INVICTT Fitness"]').forEach(i=>i.src=W.logo)}});
- $("#eB").addEventListener("click",e=>{const t=e.target;
+ $("#eB").addEventListener("click",e=>{const t=e.target;if(t.dataset.cam){const q=t.dataset.cam.split("|");let sel="";if(q[0]==="ph")sel='input[data-ph="'+q[1]+"|"+q[2]+'"]';else if(q[0]==="goal")sel='input[data-gph="'+q[1]+'"]';else if(q[0]==="logo")sel="#g_l";const inp=sel?document.querySelector(sel):null;if(inp){inp.setAttribute("capture","environment");inp.click()}return;
   if(t.dataset.rph){W.photos[t.dataset.rph]=PHOTOS[t.dataset.rph]="";paint()}
+  if(t.dataset.grph){W.goalPhotos[t.dataset.grph]="";paint()}
+  if(t.dataset.gdel&&confirm("Excluir este objetivo?")){W.goals.splice(+t.dataset.gdel,1);paint()}
   if(t.dataset.del&&confirm("Excluir este produto?")){const[g,i]=t.dataset.del.split("|");W[g].splice(+i,1);paint()}
   if(t.dataset.mv){const[g,i,d]=t.dataset.mv.split("|"),a=W[g],j=+i+ +d;if(j>=0&&j<a.length){[a[+i],a[j]]=[a[j],a[+i]];paint()}}
   if(t.dataset.new){const g=t.dataset.new;W[g].push({id:"p"+Date.now(),art:{supplements:"tub",fashion:"tee",kits:"kit"}[g],name:"Novo produto",price:0});paint()}});
