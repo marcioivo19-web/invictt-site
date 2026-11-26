@@ -365,7 +365,7 @@ $("#gMod").innerHTML=C.fashion.map(card).join("");
 ART.kit=()=>'<g transform="translate(-12 6) scale(.85)">'+ART.tub()+'</g><g transform="translate(28 14) scale(.7)">'+ART.jar()+'</g>';
 $("#gKit").innerHTML=C.kits.map(card).join("");
 $("#gNew").innerHTML=ALL.filter(p=>/Novo|Lançamento|Destaque/.test(p.badge||"")).map(card).join(""); const visualBanners=IMAGE_ASSETS.banners||[]; if(visualBanners.length){$("#hero").insertAdjacentHTML("afterend",'<section class="visual-banners" aria-label="Campanhas"><div class="wrap"><h2>Campanhas INVICTT</h2><p class="sub">Confira as principais ofertas e lançamentos.</p><div class="vb-grid">'+visualBanners.map((u,i)=>'<img loading="lazy" src="'+u+'" alt="Campanha INVICTT ' +(i+1)+'">').join("")+'</div></div></section>');} const visualPromos=IMAGE_ASSETS.promoArts||[]; if(visualPromos.length){$("#promocoes").insertAdjacentHTML("afterend",'<section class="visual-promos"><div class="wrap"><h2>Ofertas e ações promocionais</h2><p class="sub">Artes promocionais para destacar as campanhas da loja.</p><div class="vp-grid">'+visualPromos.map((u,i)=>'<img loading="lazy" src="'+u+'" alt="Arte promocional INVICTT ' +(i+1)+'">').join("")+'</div></div></section>');}
-$("#goals").innerHTML=[["Massa muscular","tub"],["Alta performance","jar"],["Energia e emagrecimento","pre"]].map(g=>'<a class="goal" href="#suplementos"><span class="ci">'+art(g[1])+"</span><b>"+g[0]+"</b></a>").join("");
+const PUBLIC_GOALS=ST.goals||[{id:"g1",name:"Massa muscular",art:"tub"},{id:"g2",name:"Alta performance",art:"jar"},{id:"g3",name:"Energia e emagrecimento",art:"pre"}];$("#goals").innerHTML=PUBLIC_GOALS.map(g=>'<a class="goal" href="#suplementos"><span class="ci">'+((ST.goalPhotos&&ST.goalPhotos[g.id])?'<img class="catphoto" src="'+ST.goalPhotos[g.id]+'" alt="">':art(g.art))+"</span><b>"+g.name+"</b></a>").join("");
 
 document.addEventListener("click",e=>{
   const id=e.target.getAttribute&&e.target.getAttribute("data-add");
@@ -509,7 +509,7 @@ async function exportHTML(){collect();const ex=clone(outObj());let bytes=0,skip=
  await saveFile("invictt-site-editado.html",html);if(skip)alert(skip+" vídeo(s) grande(s) não foram incluídos no arquivo (limite total de 12 MB). Use link para eles.")}
 if(EDIT){document.body.classList.add("edm");$("#ep").classList.add("open");paint();
  document.querySelectorAll(EDSEL).forEach((el,i)=>{el.contentEditable="true";el.addEventListener("click",e=>e.preventDefault());el.addEventListener("keydown",e=>{e.stopPropagation();if(e.key==="Enter"){e.preventDefault();el.blur()}});el.addEventListener("blur",()=>{ST.text[i]=el.textContent;persist()})});
- $("#eB").addEventListener("input",e=>{const t=e.target,g=t.dataset.g;if(!g)return;const p=W[g][+t.dataset.i],f=t.dataset.f;
+ $("#eB").addEventListener("input",e=>{const t=e.target,g=t.dataset.g;if(t.dataset.gi){const p=W.goals[+t.dataset.gi],f=t.dataset.gf;if(f==="name")p.name=t.value;return}if(!g)return;const p=W[g][+t.dataset.i],f=t.dataset.f;
   if(f==="price"){const n=parseFloat(t.value.replace(",","."));if(!isNaN(n))p.price=n}
   else if(f==="old"){const n=parseFloat(t.value.replace(",","."));if(isNaN(n)||!n)delete p.old;else p.old=n}
   else if(!t.value&&f!=="name")delete p[f];else p[f]=t.value});
